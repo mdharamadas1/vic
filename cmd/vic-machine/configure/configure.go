@@ -41,10 +41,11 @@ import (
 type Configure struct {
 	*data.Data
 
-	proxies   common.Proxies
-	cNetworks common.CNetworks
-	dns       common.DNS
-	volStores common.VolumeStores
+	proxies    common.Proxies
+	cNetworks  common.CNetworks
+	dns        common.DNS
+	volStores  common.VolumeStores
+	registries common.Registries
 
 	certificates common.CertFactory
 
@@ -100,16 +101,17 @@ func (c *Configure) Flags() []cli.Flag {
 	id := c.IDFlags()
 	volume := c.volStores.Flags()
 	compute := c.ComputeFlags()
-	debug := c.DebugFlags()
+	debug := c.DebugFlags(false)
 	cNetwork := c.cNetworks.CNetworkFlags(false)
 	proxies := c.proxies.ProxyFlags(false)
 	memory := c.VCHMemoryLimitFlags(false)
 	cpu := c.VCHCPULimitFlags(false)
 	certificates := c.certificates.CertFlags()
+	registries := c.registries.Flags()
 
 	// flag arrays are declared, now combined
 	var flags []cli.Flag
-	for _, f := range [][]cli.Flag{target, ops, id, compute, volume, dns, cNetwork, memory, cpu, certificates, proxies, util, debug} {
+	for _, f := range [][]cli.Flag{target, ops, id, compute, volume, dns, cNetwork, memory, cpu, certificates, registries, proxies, util, debug} {
 		flags = append(flags, f...)
 	}
 
@@ -151,6 +153,11 @@ func (c *Configure) processParams() error {
 	if err != nil {
 		return err
 	}
+
+	if err := c.registries.ProcessRegistries(); err != nil {
+		return err
+	}
+	c.Data.RegistryCAs = c.registries.RegistryCAs
 
 	return nil
 }
@@ -214,6 +221,7 @@ func (c *Configure) copyChangedConf(o *config.VirtualContainerHostConfigSpec, n 
 	if n.CertificateAuthorities != nil {
 		o.CertificateAuthorities = n.CertificateAuthorities
 	}
+
 	if n.UserCertificates != nil {
 		o.UserCertificates = n.UserCertificates
 	}
@@ -251,7 +259,7 @@ func (c *Configure) processCertificates(client, public, management data.NetworkC
 
 	_, err := os.Lstat(c.certificates.CertPath)
 	if err == nil || os.IsExist(err) {
-		return fmt.Errorf("Specified or default certificate output location \"%s\" already exists. Specify a location that does not yet exist with --cert-path to continue or do not specify --tls-noverify if, instead, you want to load certificates from %s", c.certificates.CertPath, c.certificates.CertPath)
+		return fmt.Errorf("Specified or default certificate output location \"%s\" already exists. Specify a location that does not yet exist with --tls-cert-path to continue or do not specify --tls-noverify if, instead, you want to load certificates from %s", c.certificates.CertPath, c.certificates.CertPath)
 	}
 
 	var debug int

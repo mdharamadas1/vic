@@ -76,7 +76,7 @@ func (i *Inspect) Flags() []cli.Flag {
 			Destination: &i.Timeout,
 		},
 		cli.StringFlag{
-			Name:        "cert-path",
+			Name:        "tls-cert-path",
 			Value:       "",
 			Usage:       "The path to check for existing certificates. Defaults to './<vch name>/'",
 			Destination: &i.CertPath,
@@ -86,7 +86,7 @@ func (i *Inspect) Flags() []cli.Flag {
 	target := i.TargetFlags()
 	id := i.IDFlags()
 	compute := i.ComputeFlags()
-	debug := i.DebugFlags()
+	debug := i.DebugFlags(true)
 
 	// flag arrays are declared, now combined
 	var flags []cli.Flag
