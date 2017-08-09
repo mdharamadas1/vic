@@ -95,6 +95,11 @@ pipeline:
       SHELL: /bin/bash
       TEST_TIMEOUT: 60s
       GOVC_INSECURE: true
+      HOST_TYPE: $HOST_TYPE
+      NIMBUS_USER: $NIMBUS_USER
+      NIMBUS_PASSWORD: $NIMBUS_PASSWORD
+      NIMBUS_DOMAIN: $NIMBUS_DOMAIN
+      NIMBUS_GW: $NIMBUS_GW
     commands:
       - $cmd ${tests:-tests/test-cases}
 CONFIG

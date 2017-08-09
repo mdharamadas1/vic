@@ -17,11 +17,18 @@
 # Run a specific robot file (from the project root directory)
 # ./tests/robot.sh tests/test-cases/Group6-VIC-Machine/6-04-Create-Basic.robot
 
-export GITHUB_TOKEN=''
-export GOVC_URL=root:password@1.1.1.1
-export GOVC_URL_HOST=1.1.1.1
+export GITHUB_TOKEN=3f5a3b6b9cb45371d813b7afc01ceaf66e603086
+export GOVC_URL=root:password123@172.16.65.129
+export GOVC_URL_HOST=172.16.65.129
 export GOVC_USERNAME=root
-export GOVC_PASSWORD=password
+export GOVC_PASSWORD=password123
 export DOMAIN=''
+
+export HOST_TYPE=ESXi
+
+export NIMBUS_GW='nimbus-gateway.eng.vmware.com'
+export NIMBUS_DOMAIN='eng.vmware.com'
+export NIMBUS_USER='svc.victestuser'
+export NIMBUS_PASSWORD=Q2D6EEi8k7hcWL2xj99
 
 ./tests/local-integration-test.sh $@

@@ -37,6 +37,6 @@ pipeline:
       DOMAIN: ${DOMAIN}
     commands:
       - tests/integration-test.sh
-      #- pybot tests/test-cases/Group1-Docker-Commands/1-13-Docker-Version.robot
+      - pybot tests/test-cases/Group1-Docker-Commands/1-05-Docker-Start.robot
     volumes:
       - /tmp
