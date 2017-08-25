@@ -18,10 +18,10 @@
 # ./tests/robot.sh tests/test-cases/Group6-VIC-Machine/6-04-Create-Basic.robot
 
 export GITHUB_TOKEN=3f5a3b6b9cb45371d813b7afc01ceaf66e603086
-export GOVC_URL=root:password123@172.16.65.129
-export GOVC_URL_HOST=172.16.65.129
-export GOVC_USERNAME=root
-export GOVC_PASSWORD=password123
+export GOVC_URL=droneci:Og0928V7WIUj@144.217.252.172
+export GOVC_URL_HOST=144.217.252.172
+export GOVC_USERNAME=droneci
+export GOVC_PASSWORD=Og0928V7WIUj
 export DOMAIN=''
 
 export HOST_TYPE=ESXi

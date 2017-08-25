@@ -104,4 +104,4 @@ pipeline:
       - $cmd ${tests:-tests/test-cases}
 CONFIG
 
-drone exec --privileged --local $tmpYml
+drone exec --privileged --local $tmpYml --timeout "2h0m0s" --timeout.inactivity "1h45m0s"
