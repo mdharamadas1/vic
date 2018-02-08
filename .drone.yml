@@ -30,8 +30,8 @@ pipeline:
     environment:
       BIN: bin
       SHELL: /bin/bash
-      COMMIT: ${DRONE_COMMIT}
     commands:
+      - export COMMIT=${DRONE_COMMIT}
       - echo "Expecting ${DRONE_COMMIT}"
       - git log -5
       - git log -1 --pretty=oneline | grep "^${DRONE_COMMIT}" > /dev/null && echo 'Build matches' || (git log -1 --pretty=oneline | grep "Merge ${DRONE_COMMIT}" > /dev/null && echo 'Build is of a merge commit' || (echo 'Build does not match!' && exit 1))
@@ -43,9 +43,7 @@ pipeline:
       BIN: bin
       GOPATH: /go
       SHELL: /bin/bash
-      TEST_URL_ARRAY: ${TEST_URL_ARRAY}
-      DRONE_SERVER: ${DRONE_SERVER}
-      DRONE_TOKEN: ${DRONE_TOKEN}
+    secrets: [ drone_server, drone_token, test_url_array ]
     commands:
       - tests/wait_until_previous_builds_complete.sh
 
@@ -56,15 +54,10 @@ pipeline:
       BIN: bin
       GOPATH: /go
       SHELL: /bin/bash
-      DRONE_SERVER:  ${DRONE_SERVER}
-      DRONE_TOKEN:  ${DRONE_TOKEN}
-      TEST_URL_ARRAY:  ${TEST_URL_ARRAY}
-      TEST_USERNAME:  ${TEST_USERNAME}
-      TEST_PASSWORD:  ${TEST_PASSWORD}
-      REGISTRY_PASSWORD:  ${REGISTRY_PASSWORD}
-      BUILD_NUMBER: ${DRONE_BUILD_NUMBER}
-      COMMIT: ${DRONE_COMMIT}
+    secrets: [ drone_server, drone_token, registry_password, test_password, test_url_array, test_username ]
     commands:
+      - export BUILD_NUMBER=${DRONE_BUILD_NUMBER}
+      - export COMMIT=${DRONE_COMMIT}
       - make mark
       - make all
       - make sincemark
@@ -87,29 +80,13 @@ pipeline:
       GOPATH: /go
       SHELL: /bin/bash
       LOG_TEMP_DIR: install-logs
-      GITHUB_AUTOMATION_API_KEY:  ${GITHUB_AUTOMATION_API_KEY}
-      DRONE_SERVER:  ${DRONE_SERVER}
-      DRONE_TOKEN:  ${DRONE_TOKEN}
-      DRONE_MACHINE:  ${DRONE_MACHINE}
-      TEST_URL_ARRAY:  ${TEST_URL_ARRAY}
-      TEST_USERNAME:  ${TEST_USERNAME}
-      TEST_PASSWORD:  ${TEST_PASSWORD}
-      REGISTRY_PASSWORD:  ${REGISTRY_PASSWORD}
-      TEST_DATASTORE: ${TEST_DATASTORE}
-      TEST_TIMEOUT: ${TEST_TIMEOUT}
-      REPORTING_SERVER_URL: ${REPORTING_SERVER_URL}
       GOVC_INSECURE: true
-      GOVC_USERNAME:  ${TEST_USERNAME}
-      GOVC_PASSWORD:  ${TEST_PASSWORD}
-      GOVC_DATASTORE: ${TEST_DATASTORE}
-      GS_PROJECT_ID: ${GS_PROJECT_ID}
-      GS_CLIENT_EMAIL: ${GS_CLIENT_EMAIL}
-      GS_PRIVATE_KEY: ${GS_PRIVATE_KEY}
-      DOMAIN: ${CI_DOMAIN}
-      SYSLOG_SERVER: ${SYSLOG_SERVER}
-      SYSLOG_USER: ${SYSLOG_USER}
-      SYSLOG_PASSWD: ${SYSLOG_PASSWD}
+    secrets: [ drone_server, drone_token, drone_machine, github_automation_api_key, gs_client_email, gs_private_key, gs_project_id, registry_password, reporting_server_url, syslog_passwd, syslog_server, syslog_user, test_resource, test_timeout, test_url_array ]
     commands:
+      - export GOVC_USERNAME=${TEST_USERNAME}
+      - export GOVC_PASSWORD=${TEST_PASSWORD}
+      - export GOVC_DATASTORE=${TEST_DATASTORE}
+      - export DOMAIN=${CI_DOMAIN}
       - . ./tests/ci-env.sh # set CI env variable values
       - make mark
       - tests/integration-test.sh
@@ -126,9 +103,7 @@ pipeline:
     environment:
       BUILD_NUMBER: ${DRONE_BUILD_NUMBER}
       BIN: bin
-      GS_PROJECT_ID: ${GS_PROJECT_ID}
-      GS_CLIENT_EMAIL: ${GS_CLIENT_EMAIL}
-      GS_PRIVATE_KEY: ${GS_PRIVATE_KEY}
+    secrets: [ gs_client_email, gs_private_key, gs_project_id ]
     commands:
       - mkdir -p $BIN/ui
       - export LATEST_VIC_UI_BUILD="$(gsutil ls -l 'gs://vic-ui-builds' | grep -v TOTAL | grep vic_ | sort -k2 -r | (trap ' ' PIPE; head -1))"
@@ -147,9 +122,7 @@ pipeline:
     environment:
       BUILD_NUMBER: ${DRONE_BUILD_NUMBER}
       BIN: bin
-      GS_PROJECT_ID: ${GS_PROJECT_ID}
-      GS_CLIENT_EMAIL: ${GS_CLIENT_EMAIL}
-      GS_PRIVATE_KEY: ${GS_PRIVATE_KEY}
+    secrets: [ gs_client_email, gs_private_key, gs_project_id ]
     commands:
       - mkdir -p $BIN/ui
       - export LATEST_VIC_UI_RELEASE="$(gsutil ls -l 'gs://vic-ui-releases' | grep -v TOTAL | grep vic_ | sort -k2 -r | (trap ' ' PIPE; head -1))"
@@ -291,9 +264,8 @@ pipeline:
   trigger-downstream:
     image: harbor.ci.drone.local/library/vic-downstream-trigger:1.0
     environment:
-      DRONE_SERVER: ${DRONE_SERVER}
-      DRONE_TOKEN: ${DRONE_TOKEN}
       SHELL: /bin/bash
+    secrets: [ drone_server, drone_token]
     when:
       repo: vmware/vic
       event: [ push, tag ]
