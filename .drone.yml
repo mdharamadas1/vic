@@ -102,7 +102,6 @@ pipeline:
       - 'export GOVC_PASSWORD=${TEST_PASSWORD}'
       - 'export GOVC_DATASTORE=${TEST_DATASTORE}'
       - 'export DOMAIN=${CI_DOMAIN}'
-      - '. ./tests/ci-env.sh'
       - 'make mark'
       - tests/integration-test.sh
       - 'make sincemark'
