@@ -107,51 +107,50 @@ pipeline:
       - 'make sincemark'
     volumes:
       - /tmp
-      - '/home/vic:/ci'
     when:
       status: success
-  vic-ui:
-    image: 'gcr.io/eminent-nation-87317/vic-integration-test:1.42'
-    pull: true
-    environment:
-      BUILD_NUMBER: '${DRONE_BUILD_NUMBER}'
-      BIN: bin
-    secrets:
-      - gs_client_email
-      - gs_private_key
-      - gs_project_id
-    commands:
-      - 'mkdir -p $BIN/ui'
-      - 'export LATEST_VIC_UI_BUILD="$(gsutil ls -l ''gs://vic-ui-builds'' | grep -v TOTAL | grep vic_ | sort -k2 -r | (trap '' '' PIPE; head -1))"'
-      - 'export VIC_UI_URL=$(echo $LATEST_VIC_UI_BUILD | xargs | cut -d " " -f 3 | sed "s/gs:\/\//https:\/\/storage.googleapis.com\//")'
-      - 'wget -nv $VIC_UI_URL -P $BIN'
-      - 'tar -xvzf $BIN/vic_ui_*.tar.gz'
-      - 'ls -la ./$BIN && ./$BIN/ui/sync-vic-ui-version.sh -p bin/ 2>&1'
-      - 'rm $BIN/vic_ui_*.tar.gz'
-    when:
-      status: success
-      branch: [master]
-  vic-ui-release:
-    image: 'gcr.io/eminent-nation-87317/vic-integration-test:1.42'
-    pull: true
-    environment:
-      BUILD_NUMBER: '${DRONE_BUILD_NUMBER}'
-      BIN: bin
-    secrets:
-      - gs_client_email
-      - gs_private_key
-      - gs_project_id
-    commands:
-      - 'mkdir -p $BIN/ui'
-      - 'export LATEST_VIC_UI_RELEASE="$(gsutil ls -l ''gs://vic-ui-releases'' | grep -v TOTAL | grep vic_ | sort -k2 -r | (trap '' '' PIPE; head -1))"'
-      - 'export VIC_UI_URL=$(echo $LATEST_VIC_UI_RELEASE | xargs | cut -d " " -f 3 | sed "s/gs:\/\//https:\/\/storage.googleapis.com\//")'
-      - 'wget -nv $VIC_UI_URL -P $BIN'
-      - 'tar -xvzf $BIN/vic_ui_*.tar.gz'
-      - 'ls -la ./$BIN && ./$BIN/ui/sync-vic-ui-version.sh -p bin/ 2>&1'
-      - 'rm $BIN/vic_ui_*.tar.gz'
-    when:
-      status: success
-      branch: ['releases/*', 'refs/tags/*']
+#  vic-ui:
+#    image: 'gcr.io/eminent-nation-87317/vic-integration-test:1.42'
+#    pull: true
+#    environment:
+#      BUILD_NUMBER: '${DRONE_BUILD_NUMBER}'
+#      BIN: bin
+#    secrets:
+#      - gs_client_email
+#      - gs_private_key
+#      - gs_project_id
+#    commands:
+#      - 'mkdir -p $BIN/ui'
+#      - 'export LATEST_VIC_UI_BUILD="$(gsutil ls -l ''gs://vic-ui-builds'' | grep -v TOTAL | grep vic_ | sort -k2 -r | (trap '' '' PIPE; head -1))"'
+#      - 'export VIC_UI_URL=$(echo $LATEST_VIC_UI_BUILD | xargs | cut -d " " -f 3 | sed "s/gs:\/\//https:\/\/storage.googleapis.com\//")'
+#      - 'wget -nv $VIC_UI_URL -P $BIN'
+#      - 'tar -xvzf $BIN/vic_ui_*.tar.gz'
+#      - 'ls -la ./$BIN && ./$BIN/ui/sync-vic-ui-version.sh -p bin/ 2>&1'
+#      - 'rm $BIN/vic_ui_*.tar.gz'
+#    when:
+#      status: success
+#      branch: [master]
+#  vic-ui-release:
+#    image: 'gcr.io/eminent-nation-87317/vic-integration-test:1.42'
+#    pull: true
+#    environment:
+#      BUILD_NUMBER: '${DRONE_BUILD_NUMBER}'
+#      BIN: bin
+#    secrets:
+#      - gs_client_email
+#      - gs_private_key
+#      - gs_project_id
+#    commands:
+#      - 'mkdir -p $BIN/ui'
+#      - 'export LATEST_VIC_UI_RELEASE="$(gsutil ls -l ''gs://vic-ui-releases'' | grep -v TOTAL | grep vic_ | sort -k2 -r | (trap '' '' PIPE; head -1))"'
+#      - 'export VIC_UI_URL=$(echo $LATEST_VIC_UI_RELEASE | xargs | cut -d " " -f 3 | sed "s/gs:\/\//https:\/\/storage.googleapis.com\//")'
+#      - 'wget -nv $VIC_UI_URL -P $BIN'
+#      - 'tar -xvzf $BIN/vic_ui_*.tar.gz'
+#      - 'ls -la ./$BIN && ./$BIN/ui/sync-vic-ui-version.sh -p bin/ 2>&1'
+#      - 'rm $BIN/vic_ui_*.tar.gz'
+#    when:
+#      status: success
+#      branch: ['releases/*', 'refs/tags/*']
   bundle:
     image: 'gcr.io/eminent-nation-87317/golang:1.8'
     pull: true
@@ -260,11 +259,11 @@ pipeline:
       event: [push, tag]
       branch: [master, 'releases/*', 'refs/tags/*']
       status: success
-  report-coverage:
-    image: robertstettner/drone-codecov
-    token: '${CODECOV_TOKEN}'
-    files:
-      - .cover/cover.out
+#  report-coverage:
+#    image: robertstettner/drone-codecov
+#    token: '${CODECOV_TOKEN}'
+#    files:
+#      - .cover/cover.out
   notify-slack-on-fail:
     image: plugins/slack
     webhook: '${SLACK_URL}'
@@ -292,14 +291,14 @@ pipeline:
       repo: vmware/vic
       branch: ['refs/tags/*']
       status: success
-  pass-rate:
-    image: 'gcr.io/eminent-nation-87317/vic-integration-test:1.42'
-    pull: true
-    environment:
-      BIN: bin
-      SHELL: /bin/bash
-      GITHUB_AUTOMATION_API_KEY: '${GITHUB_AUTOMATION_API_KEY}'
-      SLACK_URL: '${SLACK_URL}'
-    commands:
-      - tests/pass-rate.sh
+#  pass-rate:
+#    image: 'gcr.io/eminent-nation-87317/vic-integration-test:1.42'
+#    pull: true
+#    environment:
+#      BIN: bin
+#      SHELL: /bin/bash
+#      GITHUB_AUTOMATION_API_KEY: '${GITHUB_AUTOMATION_API_KEY}'
+#      SLACK_URL: '${SLACK_URL}'
+#    commands:
+#      - tests/pass-rate.sh
 
